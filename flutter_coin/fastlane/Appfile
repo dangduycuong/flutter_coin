@@ -1,0 +1,11 @@
+json_key_file("") # Path to the json secret file - Follow https://docs.fastlane.tools/actions/supply/#setup to get one
+package_name("com.hoangnh.clean_architechture") # e.g. com.krausefx.app
+
+app_identifier("com.vmo.c3FlutterTemp") # The bundle identifier of your app
+apple_id("hoanghuy4398@gmail.com") # Your Apple email address
+
+itc_team_id("120373935") # App Store Connect Team ID
+team_id("PTFP2KAXC5") # Developer Portal Team ID
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile

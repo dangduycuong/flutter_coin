@@ -1,0 +1,97 @@
+{
+  "project_info": {
+    "project_number": "220484531646",
+    "project_id": "project-base-a6be6",
+    "storage_bucket": "project-base-a6be6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:220484531646:android:dbc0f6ead87db2d51635ef",
+        "android_client_info": {
+          "package_name": "com.hoangnh.clean_architechture.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "220484531646-682se9g5fb43fnvilv3e90ooi2jvc0is.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9x52d6Bh0TEjLoZjw63S1nSx4SkeJwVE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "220484531646-682se9g5fb43fnvilv3e90ooi2jvc0is.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:220484531646:android:4c415f897e3600b81635ef",
+        "android_client_info": {
+          "package_name": "com.hoangnh.clean_architechture.production"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "220484531646-682se9g5fb43fnvilv3e90ooi2jvc0is.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9x52d6Bh0TEjLoZjw63S1nSx4SkeJwVE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "220484531646-682se9g5fb43fnvilv3e90ooi2jvc0is.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:220484531646:android:2d14f39cc94710ee1635ef",
+        "android_client_info": {
+          "package_name": "com.hoangnh.clean_architechture.staging"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "220484531646-682se9g5fb43fnvilv3e90ooi2jvc0is.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9x52d6Bh0TEjLoZjw63S1nSx4SkeJwVE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "220484531646-682se9g5fb43fnvilv3e90ooi2jvc0is.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

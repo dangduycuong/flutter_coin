@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "220484531646",
+    "project_id": "project-base-a6be6",
+    "storage_bucket": "project-base-a6be6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:220484531646:android:6e7ec6895291b1ea1635ef",
+        "android_client_info": {
+          "package_name": "com.vmo.c3FlutterTemp.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "220484531646-682se9g5fb43fnvilv3e90ooi2jvc0is.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9x52d6Bh0TEjLoZjw63S1nSx4SkeJwVE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "220484531646-682se9g5fb43fnvilv3e90ooi2jvc0is.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "220484531646-toqvr881veda9a0gruvtolqm3uj6f51d.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.hoangnh.cleanArchitechture"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:220484531646:android:48b0f40fb4dc962d1635ef",
+        "android_client_info": {
+          "package_name": "com.vmo.c3FlutterTemp.stag"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "220484531646-682se9g5fb43fnvilv3e90ooi2jvc0is.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9x52d6Bh0TEjLoZjw63S1nSx4SkeJwVE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "220484531646-682se9g5fb43fnvilv3e90ooi2jvc0is.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "220484531646-toqvr881veda9a0gruvtolqm3uj6f51d.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.hoangnh.cleanArchitechture"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

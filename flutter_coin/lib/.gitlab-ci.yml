@@ -1,0 +1,166 @@
+image: cirrusci/flutter:stable
+
+stages:
+  - test
+  - build
+  - deploy
+
+.before_script_template: &mobileBeforeScript
+  before_script:
+    - sh .setup_app.sh
+    - flutter pub global activate pubspec_version
+    - FLUTTER_VERSION=`flutter pub global run pubspec_version:pubver get`
+    - export BUILD_VERSION=$(echo $FLUTTER_VERSION | cut -d "+" -f1)
+    - export BUILD_NUMBER=$(echo $FLUTTER_VERSION | cut -d "+" -f2)
+    - echo Build Version $BUILD_VERSION
+    - echo Build Number $BUILD_NUMBER
+
+test:
+  stage: test
+  tags:
+    - vmogroup
+  cache:
+    paths:
+      - $CI_PROJECT_DIR/.pub-cache/
+
+  <<: *mobileBeforeScript
+
+  script:
+    - flutter format . --set-exit-if-changed
+    - flutter analyze
+  only:
+    - /^bugfix/.*$/
+    - /^feature/.*$/
+    - /^hotfix/.*$/
+    - /^update/.*$/
+    - develop
+
+diawi_android_dev: #Job name
+  stage: build # kind of job
+  when: manual
+  allow_failure: true #Make to skip build step and deploy step
+  needs: [test]
+  cache:
+    paths:
+      - $CI_PROJECT_DIR/.pub-cache/
+
+  <<: *mobileBeforeScript
+
+  script:
+    # These step is set-up for distribute to slack app and google chat
+    - export BUILD_FLAVOR="Dev"
+    - export BUILD_FLAVOR_KEY="dev"
+    - sh .setup_env_config.sh $BUILD_FLAVOR_KEY
+    - sh .build_android.sh
+    - sh .setup_fastlane.sh
+    - bundle exec fastlane sendBuildToGoogleChat --env $BUILD_FLAVOR_KEY
+
+  tags:
+    - vops-runner
+  only:
+    - /^bugfix/.*$/
+    - /^feature/.*$/
+    - /^hotfix/.*$/
+    - /^update/.*$/
+    - develop
+
+diawi_android_staging: #Job name
+  stage: build # kind of job
+  when: manual
+  allow_failure: true #Make to skip build step and deploy step
+  needs: [test]
+  cache:
+    paths:
+      - $CI_PROJECT_DIR/.pub-cache/
+
+  <<: *mobileBeforeScript
+
+  script:
+    # These step is set-up for distribute to slack app and google chat
+    - export BUILD_FLAVOR="Stag"
+    - export BUILD_FLAVOR_KEY="stag"
+    - sh .setup_env_config.sh $BUILD_FLAVOR_KEY
+    - sh .build_android.sh $BUILD_FLAVOR_KEY
+    - sh .setup_fastlane.sh
+    - bundle exec fastlane sendBuildToGoogleChat --env $BUILD_FLAVOR_KEY
+
+  artifacts:
+    paths:
+      - build/app/outputs/flutter-apk/app-stag-release.apk
+  tags:
+    - vops-runner
+  only:
+    - /^bugfix/.*$/
+    - /^feature/.*$/
+    - /^hotfix/.*$/
+    - /^update/.*$/
+    - develop
+
+firebase_android_staging:
+  stage: deploy
+  when: manual
+  needs: [diawi_android_staging]
+  dependencies:
+    - diawi_android_staging
+  script:
+    - export BUILD_FLAVOR_KEY="stag"
+    - sh .setup_fastlane.sh
+    - bundle exec fastlane distribute --env $BUILD_FLAVOR_KEY
+  tags:
+    - vmogroup
+  only:
+    - /^release/.*$/
+    - /^update/.*$/
+    - /^hotfix/.*$/
+
+diawi_ios_dev: #Job name
+  stage: build # kind of job
+  when: manual
+  allow_failure: true #Make to skip build step and deploy step
+  needs: [test]
+  cache:
+    paths:
+      - $CI_PROJECT_DIR/.pub-cache/
+
+  <<: *mobileBeforeScript
+
+  script:
+    - export BUILD_FLAVOR="Dev"
+    - export BUILD_FLAVOR_KEY="dev"
+    - sh .setup_env_config.sh $BUILD_FLAVOR_KEY
+    - sh .setup_fastlane.sh
+    - bundle exec fastlane ios buildIOS --env $BUILD_FLAVOR_KEY --verbose
+
+  tags:
+    - macmini-2014
+  only:
+    - /^bugfix/.*$/
+    - /^feature/.*$/
+    - /^hotfix/.*$/
+    - /^update/.*$/
+    - develop
+
+testflight_staging: #Job name
+  stage: build # kind of job
+  when: manual
+  allow_failure: true #Make to skip build step and deploy step
+  needs: [test]
+  cache:
+    paths:
+      - $CI_PROJECT_DIR/.pub-cache/
+
+  <<: *mobileBeforeScript
+
+  script:
+    - export BUILD_FLAVOR="Stag"
+    - export BUILD_FLAVOR_KEY="stag"
+    - sh .setup_env_config.sh $BUILD_FLAVOR_KEY
+    - sh .setup_fastlane.sh
+    - bundle exec fastlane ios testFlightDistribute --env $BUILD_FLAVOR_KEY --verbose
+
+  tags:
+    - macmini-2014
+  only:
+    - /^release/.*$/
+    - /^hotfix/.*$/
+    - /^update/.*$/

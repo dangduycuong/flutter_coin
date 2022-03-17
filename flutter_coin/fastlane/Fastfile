@@ -1,0 +1,180 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+update_fastlane
+
+default_platform(:android)
+
+FLAVOR = ENV['FLAVOR']
+PREFIX = ENV['PREFIX']
+USER_PERFORM = ENV['USER_PERFORM']
+NAME_BRANCH = ENV['BRANCH_NAME']
+COMMIT_TITLE = ENV['COMMIT_TITLE']
+APP_NAME = ENV['APP_ANDROID_NAME']
+
+BUILD_PATH_DEFAULT = "build/app/outputs/flutter-apk/app-#{PREFIX}-release.apk"
+BUILD_IOS_PATH = "build/ios"
+ARCHIVE_IOS_PATH = "build/ios#{APP_NAME}.ipa"
+GRADLE_PATH = './android'
+CHANGELOG = File.read("../release-note.txt")
+
+platform :android do
+  desc "Submit a new Beta Build to Crashlytics Beta"
+  lane :beta do
+    gradle(task: "clean assembleRelease")
+    crashlytics
+
+    # sh "your_script.sh"
+    # You can also use other beta testing services here
+  end
+
+  desc "Deploy a new version to the Google Play"
+  lane :deploy do
+    gradle(task: "clean assembleRelease")
+    upload_to_play_store
+  end
+
+    desc "Send Build Android Version #{FLAVOR}"
+    lane :sendBuildToGoogleChat do
+       diawi( token: ENV['DIAWI_TOKEN'],file: "#{BUILD_PATH_DEFAULT}")
+       google_chat(
+             webhook: ENV['GOOGLE_CHAT_URL'],
+             title: "Build Android #{FLAVOR}",
+             description: "Perform by #{USER_PERFORM}",
+             buttonTitle: "DOWNLOAD",
+             section1Title:"Branch #{NAME_BRANCH}",
+             section1Description:"Commit #{COMMIT_TITLE}",
+             buttonUrl: lane_context[SharedValues::UPLOADED_FILE_LINK_TO_DIAWI],
+             imageUrl:  ENV['IMAGE_URL']
+           )
+    end
+
+     desc "Build Android Version Local"
+        lane :buildAndroidLocal do
+           gradle(task: "clean assemble#{FLAVOR}Release",project_dir: GRADLE_PATH)
+           diawi( token: ENV['DIAWI_TOKEN'],file: "#{BUILD_PATH_DEFAULT}")
+           google_chat(
+                 webhook: ENV['GOOGLE_CHAT_URL'],
+                 title: 'Build Android Dev',
+                 description: 'Perform in local',
+                 buttonTitle: "DOWNLOAD #{APP_NAME}",
+                 section1Title:"Branch #{NAME_BRANCH}",
+                 section1Description:"Commit #{COMMIT_TITLE}",
+                 buttonUrl: lane_context[SharedValues::UPLOADED_FILE_LINK_TO_DIAWI],
+                 imageUrl: ENV['IMAGE_URL']
+               )
+        end
+
+     desc "Distribute To Firebase"
+        lane :distribute do
+          firebase_app_distribution(
+            app: ENV['FIREBASE_APP_ID'],
+            groups: "testers",
+            apk_path: "#{BUILD_PATH_DEFAULT}",
+            firebase_cli_token: ENV['FIREBASE_TOKEN']
+          )
+        end
+end
+
+platform :ios do
+   desc "Build app #{PREFIX} ios"
+    lane :buildIOS do
+    cocoapods(
+    podfile: "ios/Podfile",
+    )
+      get_certificates(
+      generate_apple_certs: false,
+      filename: "VMODEV Ha Noi Technology Joint stock company",
+      platform: "ios",
+      )
+                  get_provisioning_profile(
+                  provisioning_name: "C3 Flutter Temp - AdHoc",
+                  app_identifier: "com.vmo.c3FlutterTemp",
+                  readonly: true,
+                  adhoc: true,
+                  ignore_profiles_with_different_name: true,
+                  )
+      build_app(workspace: "ios/Runner.xcworkspace", scheme: "#{PREFIX}",
+      output_directory: "#{BUILD_IOS_PATH}",
+      output_name:"#{APP_NAME}",
+      export_method: "ad-hoc",
+      codesigning_identity: "iPhone Distribution: VMODEV Ha Noi Technology Joint stock company (PTFP2KAXC5)",
+      export_options: {
+         provisioningProfiles: {
+           "com.vmo.c3FlutterTemp" => "C3 Flutter Temp - AdHoc",
+         }
+       }
+      )
+      puts "Finish build"
+       diawi( token: ENV['DIAWI_TOKEN'],file: "#{lane_context[SharedValues::IPA_OUTPUT_PATH]}")
+             google_chat(
+                   webhook: ENV['GOOGLE_CHAT_URL'],
+                   title: "Build IOS #{FLAVOR}",
+                   description: "Perform by #{USER_PERFORM}",
+                   buttonTitle: "DOWNLOAD",
+                   section1Title:"Branch #{NAME_BRANCH}",
+                   section1Description:"Commit #{COMMIT_TITLE}",
+                   buttonUrl: lane_context[SharedValues::UPLOADED_FILE_LINK_TO_DIAWI],
+                   imageUrl:  ENV['IMAGE_URL']
+                 )
+    end
+
+    desc "TestFlight #{PREFIX} ios"
+        lane :testFlightDistribute do
+        cocoapods(
+              podfile: "ios/Podfile",
+            )
+          get_certificates(
+          generate_apple_certs: false,
+          filename: "VMODEV Ha Noi Technology Joint stock company",
+          )
+                      get_provisioning_profile(
+                      provisioning_name: "C3 Flutter Temp - AppStore",
+                      app_identifier: "com.vmo.c3FlutterTemp",
+                      readonly: true,
+                      ignore_profiles_with_different_name: true,
+                      )
+          build_app(
+          workspace: "ios/Runner.xcworkspace",
+          scheme: "#{PREFIX}",
+          output_directory: "#{BUILD_IOS_PATH}",
+          output_name:"#{APP_NAME}",
+          codesigning_identity: "iPhone Distribution: VMODEV Ha Noi Technology Joint stock company (PTFP2KAXC5)",
+          export_options: {
+                   provisioningProfiles: {
+                     "com.vmo.c3FlutterTemp" => "C3 Flutter Temp - AppStore",
+                   }
+                 },
+          export_method: "app-store",
+          )
+          puts "Finish build"
+          puts "Change log get #{CHANGELOG}"
+          upload_to_testflight(
+          distribute_external: true,
+          groups: ["External"],
+          changelog: "#{CHANGELOG}"
+          )
+        end
+
+        desc "Get provision #{PREFIX} ios"
+            lane :getProvision do
+            get_certificates(
+            generate_apple_certs: false,
+            )
+            get_provisioning_profile(
+            provisioning_name: "C3 Flutter Temp - Dev",
+            app_identifier: "com.vmo.c3FlutterTemp",
+            readonly: true,
+            )
+            end
+end
