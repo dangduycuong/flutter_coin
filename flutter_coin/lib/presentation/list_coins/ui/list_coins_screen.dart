@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_coin/utils/multi-languages/multi_languages_utils.dart';
+import 'package:flutter_coin/presentation/common/search_bar_item.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../bloc/list_coins_bloc.dart';
 import 'list_all_coins_view.dart';
 import 'list_favorite_coins_view.dart';
@@ -16,15 +18,29 @@ class ListCoinsScreen extends StatefulWidget {
 
 class _ListCoinsScreenState extends State<ListCoinsScreen> {
   int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
+  String get titleAppBar {
+    String result = '';
+    switch (_selectedIndex) {
+      case 0:
+        result = 'List Coins';
+        break;
+      default:
+        result = 'Favorite Coins';
+        break;
+    }
+    return result;
+  }
+
   static const List<Widget> _widgetOptions = <Widget>[
     ListAllCoinsView(),
     ListFavoriteCoinsView(),
   ];
+  late ListCoinsBloc _bloc;
 
   @override
   void initState() {
+    _bloc = context.read<ListCoinsBloc>();
     super.initState();
   }
 
@@ -38,28 +54,47 @@ class _ListCoinsScreenState extends State<ListCoinsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Coin Market"),
+        title: Text(titleAppBar),
         actions: [
           CoinsOverviewFilterButton(
             onSelect: (filter) {
-              context.read<ListCoinsBloc>().add(CoinSortEvent(filter));
+              if (_selectedIndex == 0) {
+                _bloc.add(CoinSortEvent(filter));
+              } else {
+                _bloc.add(SortFavoriteCoinsEvent(filter));
+              }
             },
+            defaultText: _selectedIndex == 0 ? 'Market cap' : 'Date Created',
           ),
         ],
       ),
       body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+        // child: _widgetOptions.elementAt(_selectedIndex),
+        child: Column(
+          children: [
+            SearchBarItem(
+              textChangValue: (text) {
+                if (_selectedIndex == 0) {
+                  _bloc.add(SearchCoinsSuggestionsEvent(text));
+                }
+              },
+            ),
+            Expanded(
+              child: _widgetOptions.elementAt(_selectedIndex),
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.select_all),
-            label: LocaleKeys.allCoins,
+            label: 'Home',
             backgroundColor: Colors.red,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.star),
-            label: LocaleKeys.favoriteCoins,
+            label: 'Favorites',
             backgroundColor: Colors.green,
           ),
         ],
@@ -73,55 +108,58 @@ class _ListCoinsScreenState extends State<ListCoinsScreen> {
 
 class CoinsOverviewFilterButton extends StatelessWidget {
   final ViewFilterType onSelect;
+  final String defaultText;
 
-  const CoinsOverviewFilterButton({Key? key, required this.onSelect})
+  const CoinsOverviewFilterButton(
+      {Key? key, required this.onSelect, required this.defaultText})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // final l10n = context.l10n;
-
-    // final activeFilter =
-    // context.select((TodosOverviewBloc bloc) => bloc.state.filter);
-
     return PopupMenuButton<CoinsViewFilter>(
       shape: const ContinuousRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(16)),
       ),
-      // initialValue: activeFilter,
-      // tooltip: l10n.todosOverviewFilterTooltip, price,
-      //   marketCap,
-      //   volume24h,
-      //   change,
-      //   listedAt,
       onSelected: (filter) {
         onSelect(filter);
       },
       itemBuilder: (context) {
         return [
-          const PopupMenuItem(
+          PopupMenuItem(
             value: CoinsViewFilter.marketCap,
-            child: Text('Mặc định'),
+            child: Text(
+              defaultText,
+              style: GoogleFonts.lato(
+                textStyle: Theme.of(context).textTheme.headline4,
+                fontSize: 16.r,
+                fontWeight: FontWeight.w700,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
           ),
-          const PopupMenuItem(
-            value: CoinsViewFilter.price_increment,
-            child: Text('Giá tăng dần'),
+          PopupMenuItem(
+            value: CoinsViewFilter.increment,
+            child: Text(
+              'Price: lowest first',
+              style: GoogleFonts.lato(
+                textStyle: Theme.of(context).textTheme.headline4,
+                fontSize: 16.r,
+                fontWeight: FontWeight.w700,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
           ),
-          const PopupMenuItem(
-            value: CoinsViewFilter.price_decrement,
-            child: Text('Giá giảm dần'),
-          ),
-          const PopupMenuItem(
-            value: CoinsViewFilter.volume24h,
-            child: Text('volume24h'),
-          ),
-          const PopupMenuItem(
-            value: CoinsViewFilter.change,
-            child: Text('change'),
-          ),
-          const PopupMenuItem(
-            value: CoinsViewFilter.listedAt,
-            child: Text('listedAt'),
+          PopupMenuItem(
+            value: CoinsViewFilter.decrement,
+            child: Text(
+              'Price: highest first',
+              style: GoogleFonts.lato(
+                textStyle: Theme.of(context).textTheme.headline4,
+                fontSize: 16.r,
+                fontWeight: FontWeight.w700,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
           ),
         ];
       },
@@ -131,12 +169,9 @@ class CoinsOverviewFilterButton extends StatelessWidget {
 }
 
 enum CoinsViewFilter {
-  price_increment,
-  price_decrement,
+  increment,
+  decrement,
   marketCap,
-  volume24h,
-  change,
-  listedAt,
 }
 
 extension HexColor on Color {

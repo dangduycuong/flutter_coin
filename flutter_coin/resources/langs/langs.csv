@@ -14,4 +14,7 @@ message,Message,Tin nhắn
 more,More,Khác
 editProfile,Edit Profile,Chỉnh sửa hồ sơ
 allCoins,All Coins,Tất cả
-favoriteCoins,Favorite,Yêu thích
+favorites,Favorite,Yêu thích
+marketCap,Market cap,Vốn hoá
+priceLowestFirst,Price: lowest first,Giá tăng dần
+priceHighestFirst,Price: highest first,Giá giảm dần

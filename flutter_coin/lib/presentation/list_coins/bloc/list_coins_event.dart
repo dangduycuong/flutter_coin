@@ -37,6 +37,15 @@ class CoinLoadingEvent extends ListCoinsEvent {
   List<Object> get props => [isRefresh];
 }
 
+class SearchCoinsSuggestionsEvent extends ListCoinsEvent {
+  final String query;
+
+  const SearchCoinsSuggestionsEvent(this.query);
+
+  @override
+  List<Object> get props => [query];
+}
+
 class CoinRefreshEvent extends ListCoinsEvent {
   @override
   List<Object> get props => [];
@@ -77,4 +86,13 @@ class DeleteFavoriteCoinEvent extends ListCoinsEvent {
 
   @override
   List<Object?> get props => [uuid];
+}
+
+class SortFavoriteCoinsEvent extends ListCoinsEvent {
+  final CoinsViewFilter filter;
+
+  const SortFavoriteCoinsEvent(this.filter);
+
+  @override
+  List<Object> get props => [filter];
 }

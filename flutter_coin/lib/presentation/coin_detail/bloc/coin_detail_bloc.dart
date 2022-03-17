@@ -48,4 +48,11 @@ class CoinDetailBloc extends Bloc<CoinDetailEvent, CoinDetailState> {
       emit(LoadCoinDetailErrorState(e.displayError));
     }
   }
+
+  // String parseHtmlString() {
+  //   final document = parse(coin.description);
+  //   final String parsedString = parse(document.body.text).documentElement.text;
+  //
+  //   return parsedString;
+  // }
 }

@@ -2,13 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-import '../../../data/coins/models/response/list_coins/coins.dart';
+import '../../../data/coin_detail/models/response/coin_detail_item.dart';
 
 class CoinRankingWebViewScreen extends StatefulWidget {
   const CoinRankingWebViewScreen({Key? key, required this.coin})
       : super(key: key);
 
-  final Coins coin;
+  final CoinDetailItem coin;
 
   @override
   _CoinRankingWebViewScreenState createState() =>
@@ -30,7 +30,7 @@ class _CoinRankingWebViewScreenState extends State<CoinRankingWebViewScreen> {
         children: <Widget>[
           WebView(
             key: _key,
-            initialUrl: "${widget.coin.coinrankingUrl}",
+            initialUrl: "${widget.coin.coinRankingUrl}",
             javascriptMode: JavascriptMode.unrestricted,
             onPageFinished: (finish) {
               setState(() {

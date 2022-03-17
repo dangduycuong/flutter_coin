@@ -5,6 +5,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../utils/route/app_routing.dart';
 import '../../common/display_item_coin.dart';
+import '../../common/loading_data.dart';
 import '../../common/loading_list_coin.dart';
 import '../bloc/list_coins_bloc.dart';
 
@@ -24,6 +25,7 @@ class _ListAllCoinsViewState extends State<ListAllCoinsView> {
     _bloc = context.read<ListCoinsBloc>();
     _bloc.add(InitHiveEvent());
     _bloc.add(const CoinLoadingEvent(true));
+
     super.initState();
   }
 
@@ -51,7 +53,6 @@ class _ListAllCoinsViewState extends State<ListAllCoinsView> {
             sparkline: sparkline,
             isFavorite: _bloc.findFavoriteItem(coin),
             onchange: (value) {
-              print('cdd $value');
               if (value) {
                 _bloc.add(AddFavoriteCoinEvent(coin));
               } else {
@@ -75,10 +76,17 @@ class _ListAllCoinsViewState extends State<ListAllCoinsView> {
             return const LoadingListCoin();
           }
         }
+
+        if (state is CoinLoadSuccessState && _bloc.coins.isEmpty) {
+          return loadingData(context, 'Data not found');
+        }
+        if (state is CoinLoadErrorState) {
+          return loadingData(context, state.errorMessage);
+        }
         return SmartRefresher(
           controller: _controller,
           child: _displayListCoin(),
-          enablePullUp: true,
+          enablePullUp: !(_bloc.stopLoadMore),
           onRefresh: () async {
             await Future.delayed(const Duration(milliseconds: 1000));
             _controller.refreshCompleted();

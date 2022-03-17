@@ -60,3 +60,8 @@ class LoadListFavoriteSuccessState extends ListCoinsState {
   @override
   List<Object> get props => [];
 }
+
+class AddFavoriteSuccessState extends ListCoinsState {
+  @override
+  List<Object> get props => [];
+}

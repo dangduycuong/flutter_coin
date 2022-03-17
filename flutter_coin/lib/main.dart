@@ -96,7 +96,7 @@ class _MyAppState extends State<MyApp> {
         ],
         navigatorKey: NavigationUtil.rootKey,
         debugShowCheckedModeBanner: false,
-        initialRoute: RouteDefine.loginScreen.name,
+        initialRoute: RouteDefine.listCoinsScreen.name,
         onGenerateRoute: AppRouting.generateRoute,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
