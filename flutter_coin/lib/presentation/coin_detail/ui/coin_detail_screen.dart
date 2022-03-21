@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chart_sparkline/chart_sparkline.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -12,6 +12,8 @@ import '../../common/loading_data.dart';
 import '../bloc/coin_detail_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'coin_price_history_line_chart.dart';
+
 class CoinDetailScreen extends StatefulWidget {
   final Coins? coin;
 
@@ -23,6 +25,7 @@ class CoinDetailScreen extends StatefulWidget {
 
 class _CoinDetailScreenState extends State<CoinDetailScreen> {
   late CoinDetailBloc _bloc;
+  List<FlSpot> dataChart = [];
 
   @override
   void initState() {
@@ -208,15 +211,8 @@ class _CoinDetailScreenState extends State<CoinDetailScreen> {
                     ),
                   ),
                   _heightSpacing(32),
-                  Sparkline(
-                    lineWidth: 3,
-                    fallbackHeight: (MediaQuery.of(context).size.height) / 4,
-                    gridLineAmount: 7,
-                    data: sparkline,
-                    gridLinelabelPrefix: '\$',
-                    gridLineLabelPrecision: 2,
-                    enableGridLines: true,
-                    fillMode: FillMode.none,
+                  CoinPriceHistoryLineChart(
+                    dataChart: dataChart,
                   ),
                   _heightSpacing(64),
                   Text(
@@ -242,36 +238,55 @@ class _CoinDetailScreenState extends State<CoinDetailScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<CoinDetailBloc, CoinDetailState>(
         builder: (context, state) {
-          Widget? bodyView;
-          if (state is LoadingCoinDetailState) {
-            bodyView = loadingData(context, 'Data loading...');
-          }
+      Widget? bodyView;
+      if (state is LoadingCoinDetailState) {
+        bodyView = loadingData(context, 'Data loading...');
+      }
 
-          if (state is LoadCoinDetailSuccessState) {
-            final List<double> sparkline = <double>[];
-            if (_bloc.coin.sparkline != null) {
-              for (final element in _bloc.coin.sparkline!) {
-                double value = double.parse(element);
-                double priceValue = double.parse((value).toStringAsFixed(3));
-                sparkline.add(priceValue);
-              }
-            }
-            bodyView = _displayCoinDetail(sparkline);
+      if (state is LoadCoinDetailSuccessState) {
+        final List<double> sparkline = <double>[];
+        if (_bloc.coin.sparkline != null) {
+          for (final element in _bloc.coin.sparkline!) {
+            double value = double.parse(element);
+            double priceValue = double.parse((value).toStringAsFixed(3));
+            sparkline.add(priceValue);
           }
+        }
+        bodyView = _displayCoinDetail(sparkline);
+      }
 
-          return Scaffold(
-            appBar: AppBar(
-              title: Text('${widget.coin?.name}'),
-              actions: [
-                IconButton(
-                  onPressed: _pushToWebView,
-                  icon: const Icon(Icons.description),
-                ),
-              ],
+      if (state is GetCoinPriceHistoryErrorState) {
+        final List<double> history = <double>[];
+        for (final item in _bloc.coinPriceHistories) {
+          double price = double.parse(item.price ?? '');
+          double y = double.parse((price).toStringAsFixed(3));
+
+          double timestamp = (item.timestamp ?? 0).toDouble();
+          double x = double.parse((timestamp).toStringAsFixed(3));
+
+          history.add(y);
+
+          dataChart.add(FlSpot(x, y));
+        }
+        bodyView = _displayCoinDetail(history);
+      }
+
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('${widget.coin?.name}'),
+          actions: [
+            IconButton(
+              onPressed: _pushToWebView,
+              icon: const Icon(Icons.description),
             ),
-            body: bodyView,
-          );
-        },
-        listener: (context, state) {});
+          ],
+        ),
+        body: bodyView,
+      );
+    }, listener: (context, state) {
+      if (state is GetCoinPriceHistorySuccessState) {
+        _bloc.add(GetCoinPriceHistoryEvent());
+      }
+    });
   }
 }

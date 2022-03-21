@@ -3,6 +3,7 @@ import 'package:flutter_coin/data/coins/models/response/list_coins/list_coins_re
 import 'package:retrofit/retrofit.dart';
 
 import '../../../coin_detail/models/response/coin_detail_response.dart';
+import '../../models/response/coin_price_history/coin_price_history_response.dart';
 
 part 'coins_api.g.dart';
 
@@ -30,6 +31,14 @@ abstract class ListCoinsApi {
   Future<ListCoinsResponse> searchCoinsSuggestions(
     @Header('x-rapidapi-host') String host,
     @Header('x-rapidapi-key') String key,
+    @Queries() Map<String, dynamic> queries,
+  );
+
+  @GET('/coin/{uuid}')
+  Future<CoinPriceHistoryResponse> getCoinPriceHistory(
+    @Header('x-rapidapi-host') String host,
+    @Header('x-rapidapi-key') String key,
+    @Path('uuid') String uuid,
     @Queries() Map<String, dynamic> queries,
   );
 }

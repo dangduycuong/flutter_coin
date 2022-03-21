@@ -12,3 +12,8 @@ class LoadDetailCoinEvent extends CoinDetailEvent {
   @override
   List<Object?> get props => [uuid];
 }
+
+class GetCoinPriceHistoryEvent extends CoinDetailEvent {
+  @override
+  List<Object?> get props => [];
+}
