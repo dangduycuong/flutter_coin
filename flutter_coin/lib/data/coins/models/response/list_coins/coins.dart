@@ -17,7 +17,8 @@ class Coins {
   final int? rank;
   final List<String>? sparkline;
   final bool? lowVolume;
-  final String? coinrankingUrl;
+  @JsonKey(name: 'coinrankingUrl')
+  final String? coinRankingUrl;
 
   @JsonKey(name: '24hVolume')
   final String? volume;
@@ -37,7 +38,7 @@ class Coins {
     this.rank,
     this.sparkline,
     this.lowVolume,
-    this.coinrankingUrl,
+    this.coinRankingUrl,
     this.volume,
     this.btcPrice,
   });

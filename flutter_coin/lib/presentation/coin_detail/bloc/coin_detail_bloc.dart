@@ -35,12 +35,11 @@ class CoinDetailBloc extends Bloc<CoinDetailEvent, CoinDetailState> {
         key: "fb71aa7f62msh153e4924e940392p16bbc4jsn166248f8bdaa",
       );
       CoinDetailParamsRequest params = CoinDetailParamsRequest(
-        uuid: event.uuid,
         referenceCurrencyUuid: "yhjMzLPhuIDl",
         timePeriod: "24h",
       );
       CoinDetailResponseModel result =
-          await coinDetailUseCase.getCoin(header, params);
+          await coinDetailUseCase.getCoin(header, event.uuid, params);
       if (result.status != "success") {
         emit(const LoadCoinDetailErrorState("Failure"));
       } else {
@@ -57,6 +56,7 @@ class CoinDetailBloc extends Bloc<CoinDetailEvent, CoinDetailState> {
   void _getCoinPriceHistory(
       GetCoinPriceHistoryEvent event, Emitter<CoinDetailState> emit) async {
     try {
+      emit(LoadingCoinPriceHistoryState());
       CoinsHeaderRequest header = CoinsHeaderRequest(
         host: "coinranking1.p.rapidapi.com",
         key: "fb71aa7f62msh153e4924e940392p16bbc4jsn166248f8bdaa",
@@ -69,22 +69,15 @@ class CoinDetailBloc extends Bloc<CoinDetailEvent, CoinDetailState> {
       CoinPriceHistoryResponse result =
           await coinDetailUseCase.getCoinPriceHistory(header, uuid, params);
       if (result.status != "success") {
-        emit(const GetCoinPriceHistoryErrorState("Failure"));
+        emit(const LoadCoinPriceHistoryErrorState("Failure"));
       } else {
         if (result.data?.history != null) {
           coinPriceHistories = result.data?.history ?? [];
-          emit(GetCoinPriceHistorySuccessState());
+          emit(LoadCoinPriceHistorySuccessState());
         }
       }
     } on ApiException catch (e) {
-      emit(GetCoinPriceHistoryErrorState(e.displayError));
+      emit(LoadCoinPriceHistoryErrorState(e.displayError));
     }
   }
-
-// String parseHtmlString() {
-//   final document = parse(coin.description);
-//   final String parsedString = parse(document.body.text).documentElement.text;
-//
-//   return parsedString;
-// }
 }

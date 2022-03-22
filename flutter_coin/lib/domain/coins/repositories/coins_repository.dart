@@ -13,7 +13,7 @@ abstract class CoinsRepository {
       CoinsHeaderRequest header, ListCoinsParamsRequest params);
 
   Future<CoinDetailResponseModel> getCoin(
-      CoinsHeaderRequest header, CoinDetailParamsRequest params);
+      CoinsHeaderRequest header, String uuid, CoinDetailParamsRequest params);
 
   Future<ListCoinsResponse> searchCoinsSuggestions(
       CoinsHeaderRequest header, SearchSuggestionsRequestParams params);

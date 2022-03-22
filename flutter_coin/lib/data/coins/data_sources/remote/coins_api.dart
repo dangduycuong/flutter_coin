@@ -8,8 +8,8 @@ import '../../models/response/coin_price_history/coin_price_history_response.dar
 part 'coins_api.g.dart';
 
 @RestApi()
-abstract class ListCoinsApi {
-  factory ListCoinsApi(Dio dio, {String baseUrl}) = _ListCoinsApi;
+abstract class CoinsApi {
+  factory CoinsApi(Dio dio, {String baseUrl}) = _CoinsApi;
 
   @GET('/coins')
   Future<ListCoinsResponse> getCoins(
@@ -23,8 +23,7 @@ abstract class ListCoinsApi {
     @Header('x-rapidapi-host') String host,
     @Header('x-rapidapi-key') String key,
     @Path('uuid') String uuid,
-    @Query('referenceCurrencyUuid') String referenceCurrencyUuid,
-    @Query('timePeriod') String timePeriod,
+    @Queries() Map<String, dynamic> queries,
   );
 
   @GET('/search-suggestions')
@@ -34,7 +33,7 @@ abstract class ListCoinsApi {
     @Queries() Map<String, dynamic> queries,
   );
 
-  @GET('/coin/{uuid}')
+  @GET('/coin/{uuid}/history')
   Future<CoinPriceHistoryResponse> getCoinPriceHistory(
     @Header('x-rapidapi-host') String host,
     @Header('x-rapidapi-key') String key,

@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chart_sparkline/chart_sparkline.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,13 +7,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../data/coins/models/response/coin_price_history/coin_price_history.dart';
 import '../../../data/coins/models/response/list_coins/coins.dart';
 import '../../../utils/route/app_routing.dart';
 import '../../common/loading_data.dart';
 import '../bloc/coin_detail_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'bar_chart_coin_price_history.dart';
 import 'coin_price_history_line_chart.dart';
+import 'line_chart_simple_2.dart';
 
 class CoinDetailScreen extends StatefulWidget {
   final Coins? coin;
@@ -25,7 +29,7 @@ class CoinDetailScreen extends StatefulWidget {
 
 class _CoinDetailScreenState extends State<CoinDetailScreen> {
   late CoinDetailBloc _bloc;
-  List<FlSpot> dataChart = [];
+  List<FlSpot> _dataChart = [];
 
   @override
   void initState() {
@@ -114,7 +118,7 @@ class _CoinDetailScreenState extends State<CoinDetailScreen> {
     return '+$change%';
   }
 
-  Widget _displayCoinDetail(List<double> sparkline) {
+  Widget _displayCoinDetail(List<FlSpot> dataChart) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -211,9 +215,21 @@ class _CoinDetailScreenState extends State<CoinDetailScreen> {
                     ),
                   ),
                   _heightSpacing(32),
-                  CoinPriceHistoryLineChart(
-                    dataChart: dataChart,
+                  // CoinPriceHistoryLineChart(
+                  //   spots: dataChart,
+                  // ),
+                  // CoinPriceHistoryLineChart(spots: _dataChart),
+
+                  Sparkline(
+                    data: _dataChart.map((e) => e.y).toList(),
+                    useCubicSmoothing: true,
+                    cubicSmoothingFactor: 0.2,
                   ),
+                  _heightSpacing(32),
+                  LineChartSample2(
+                    spots: _dataChart,
+                  ),
+                  BarChartCoinPriceHistory(),
                   _heightSpacing(64),
                   Text(
                     'What is ${_bloc.coin.name ?? ''}',
@@ -244,31 +260,11 @@ class _CoinDetailScreenState extends State<CoinDetailScreen> {
       }
 
       if (state is LoadCoinDetailSuccessState) {
-        final List<double> sparkline = <double>[];
-        if (_bloc.coin.sparkline != null) {
-          for (final element in _bloc.coin.sparkline!) {
-            double value = double.parse(element);
-            double priceValue = double.parse((value).toStringAsFixed(3));
-            sparkline.add(priceValue);
-          }
-        }
-        bodyView = _displayCoinDetail(sparkline);
+        // bodyView = _displayCoinDetail(_dataChart);
       }
 
-      if (state is GetCoinPriceHistoryErrorState) {
-        final List<double> history = <double>[];
-        for (final item in _bloc.coinPriceHistories) {
-          double price = double.parse(item.price ?? '');
-          double y = double.parse((price).toStringAsFixed(3));
-
-          double timestamp = (item.timestamp ?? 0).toDouble();
-          double x = double.parse((timestamp).toStringAsFixed(3));
-
-          history.add(y);
-
-          dataChart.add(FlSpot(x, y));
-        }
-        bodyView = _displayCoinDetail(history);
+      if (state is LoadCoinPriceHistorySuccessState) {
+        bodyView = _displayCoinDetail(_dataChart);
       }
 
       return Scaffold(
@@ -284,8 +280,44 @@ class _CoinDetailScreenState extends State<CoinDetailScreen> {
         body: bodyView,
       );
     }, listener: (context, state) {
-      if (state is GetCoinPriceHistorySuccessState) {
+      if (state is LoadCoinDetailSuccessState) {
         _bloc.add(GetCoinPriceHistoryEvent());
+      }
+
+      if (state is LoadingCoinPriceHistoryState) {
+        _dataChart = [];
+      }
+
+      if (state is LoadCoinPriceHistorySuccessState) {
+        List<CoinPriceHistory> coinPriceHistories =
+            _bloc.coinPriceHistories.reversed.toList();
+
+        for (final item in coinPriceHistories) {
+          double timestamp = (item.timestamp ?? 0).toDouble();
+          double x = double.parse((timestamp).toStringAsFixed(3));
+
+          double price = double.parse(item.price ?? '');
+          double y = double.parse((price).toStringAsFixed(3));
+
+          _dataChart.add(FlSpot(x, y));
+        }
+
+        // if (_bloc.coinPriceHistories.length > 100) {
+        //   for (int index = 0;
+        //       index < _bloc.coinPriceHistories.length;
+        //       index++) {
+        //     // if (index % 24 == 0) {
+        //     final item = _bloc.coinPriceHistories[index];
+        //     double price = double.parse(item.price ?? '');
+        //     double y = double.parse((price).toStringAsFixed(3));
+        //
+        //     double timestamp = (item.timestamp ?? 0).toDouble();
+        //     double x = double.parse((timestamp).toStringAsFixed(3));
+        //
+        //     _dataChart.add(FlSpot(x, y));
+        //     // }
+        //   }
+        // }
       }
     });
   }

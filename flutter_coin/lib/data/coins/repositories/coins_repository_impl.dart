@@ -4,13 +4,13 @@ import 'package:flutter_coin/data/coins/models/request/coin_price_history/coin_p
 import 'package:flutter_coin/data/coins/models/request/list_coins/search_suggestions_request_params.dart';
 import 'package:flutter_coin/data/coins/models/response/coin_price_history/coin_price_history_response.dart';
 import 'package:flutter_coin/data/coins/models/response/list_coins/list_coins_response.dart';
-import '../../../domain/coins/repositories/list_coins_repository.dart';
+import '../../../domain/coins/repositories/coins_repository.dart';
 import '../../coins/data_sources/remote/coins_api.dart';
 import '../../coins/models/request/coins_header_request.dart';
 import '../../coins/models/request/list_coins/list_coins_params_request.dart';
 
 class CoinsRepositoryImpl implements CoinsRepository {
-  final ListCoinsApi api;
+  final CoinsApi api;
 
   CoinsRepositoryImpl(this.api);
 
@@ -25,14 +25,13 @@ class CoinsRepositoryImpl implements CoinsRepository {
   }
 
   @override
-  Future<CoinDetailResponseModel> getCoin(
-      CoinsHeaderRequest header, CoinDetailParamsRequest params) async {
+  Future<CoinDetailResponseModel> getCoin(CoinsHeaderRequest header,
+      String uuid, CoinDetailParamsRequest params) async {
     return await api.getCoin(
       header.host,
       header.key,
-      params.uuid,
-      params.referenceCurrencyUuid,
-      params.timePeriod,
+      uuid,
+      params.toJson(),
     );
   }
 

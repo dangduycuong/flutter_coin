@@ -26,7 +26,7 @@ EventTransformer<Event> debounce<Event>(Duration duration) {
 
 class ListCoinsBloc extends Bloc<ListCoinsEvent, ListCoinsState> {
   final CoinsUseCase coinsUseCase;
-  final int _limit = 10;
+  final int _limit = 50;
   int _start = 0;
   List<Coins> coins = <Coins>[];
   bool stopLoadMore = false;
@@ -83,6 +83,7 @@ class ListCoinsBloc extends Bloc<ListCoinsEvent, ListCoinsState> {
         }
       }
     } on ApiException catch (e) {
+      print('cdd $e');
       emit(CoinLoadErrorState(e.displayError));
     }
   }
