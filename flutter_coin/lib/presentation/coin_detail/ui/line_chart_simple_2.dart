@@ -39,7 +39,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
   ];
 
   void _setupDataForLineChart() {
-    _spots = widget.spots.reversed.toList();
+    _spots = widget.spots;
 
     double tempValue = 0;
 
@@ -49,9 +49,8 @@ class _LineChartSample2State extends State<LineChartSample2> {
     _minX = tempList.first;
     _maxX = tempList.last;
 
-    _intervalHorizontalAxis = _spots[0].x - _spots[1].x;
-    _intervalHorizontalAxis = _intervalHorizontalAxis * 72;
-
+    // _intervalHorizontalAxis = _spots[1].x - _spots[0].x;
+    _intervalHorizontalAxis = 300 * 48;
 
     tempList = _spots.map((e) => e.y).toList();
     tempList.sort((a, b) => a.compareTo(b));
@@ -65,20 +64,16 @@ class _LineChartSample2State extends State<LineChartSample2> {
     for (int i = 0; i < ddd.length - 1; i++) {
       first += '0';
     }
-    print('$ddd $first');
+
     _intervalVerticalAxis = double.parse(first);
 
     print('cdd cac gia tri tinh toan duoc\n'
-        'mang data co ${_spots.length} phan tu\n$_spots\n'
+        'mang data co ${_spots.length} phan tu\n'
+        'phan tu _spots[0] ${_spots[0]}\n'
         '_maxX $_maxX\n'
         '_maxY $_maxY\n'
         '_intervalHorizontalAxis $_intervalHorizontalAxis\n'
-        '_intervalVerticalAxis $_intervalVerticalAxis'
-    'cac moc thoi gian');
-
-    for (final item in _spots) {
-      print('${_readTimestamp(item.x.toInt())}');
-    }
+        '_intervalVerticalAxis $_intervalVerticalAxis');
   }
 
   String _convertTimeStampToHumanHour(int timeStamp) {
@@ -169,8 +164,8 @@ class _LineChartSample2State extends State<LineChartSample2> {
       gridData: FlGridData(
         show: true,
         drawVerticalLine: true,
-        horizontalInterval: _intervalVerticalAxis,
-        verticalInterval: _intervalHorizontalAxis,
+        horizontalInterval: _intervalHorizontalAxis,
+        verticalInterval: _intervalVerticalAxis,
         getDrawingHorizontalLine: (value) {
           return FlLine(
             color: const Color(0xff37434d),
@@ -189,7 +184,8 @@ class _LineChartSample2State extends State<LineChartSample2> {
         rightTitles: SideTitles(showTitles: false),
         topTitles: SideTitles(showTitles: false),
         bottomTitles: SideTitles(
-          showTitles: true, // title Ox
+          showTitles: true,
+          // title Ox
           reservedSize: 22,
           interval: _intervalHorizontalAxis,
           getTextStyles: (context, value) => const TextStyle(
@@ -221,6 +217,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
             fontSize: 15,
           ),
           getTitles: (value) {
+            return '${value.toInt()}';
             String string = value.toInt().toString();
             int number = string.split('0').length;
             if (number >= 3) {

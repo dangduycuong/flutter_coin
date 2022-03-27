@@ -17,3 +17,8 @@ class GetCoinPriceHistoryEvent extends CoinDetailEvent {
   @override
   List<Object?> get props => [];
 }
+
+class IMissYouEvent extends CoinDetailEvent {
+  @override
+  List<Object?> get props => [];
+}

@@ -15,6 +15,7 @@ import '../bloc/coin_detail_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'bar_chart_coin_price_history.dart';
+import 'candlesticks_chart.dart';
 import 'coin_price_history_line_chart.dart';
 import 'line_chart_simple_2.dart';
 
@@ -163,51 +164,95 @@ class _CoinDetailScreenState extends State<CoinDetailScreen> {
                     child: Padding(
                       padding:
                           EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                      child: Row(
+                      child: Column(
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Price to USD',
-                                style: GoogleFonts.lato(
-                                  textStyle:
-                                      Theme.of(context).textTheme.headline4,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                              ),
-                              _heightSpacing(8.h),
-                              _displayPrice(),
-                            ],
+                          Text(
+                            'MarketCap \$${_bloc.coin.marketCap}',
+                            style: GoogleFonts.lato(
+                              textStyle:
+                              Theme.of(context).textTheme.headline4,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              fontStyle: FontStyle.italic,
+                            ),
                           ),
-                          _widthSpacing(32.w),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          _heightSpacing(8.h),
+                          Row(
                             children: [
-                              Text(
-                                '24h change',
-                                style: GoogleFonts.lato(
-                                  textStyle:
-                                      Theme.of(context).textTheme.headline4,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  fontStyle: FontStyle.italic,
-                                ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Price to USD',
+                                    style: GoogleFonts.lato(
+                                      textStyle:
+                                          Theme.of(context).textTheme.headline4,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                                  _heightSpacing(8.h),
+                                  _displayPrice(),
+                                ],
                               ),
-                              _heightSpacing(8.h),
-                              Text(
-                                _changeValue(),
-                                style: GoogleFonts.lato(
-                                  textStyle:
-                                      Theme.of(context).textTheme.headline4,
-                                  fontSize: 12.r,
-                                  fontWeight: FontWeight.w700,
-                                  fontStyle: FontStyle.italic,
-                                  color: _colorChange(),
-                                ),
+                              _widthSpacing(32.w),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '24h change',
+                                    style: GoogleFonts.lato(
+                                      textStyle:
+                                          Theme.of(context).textTheme.headline4,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                                  _heightSpacing(8.h),
+                                  Text(
+                                    _changeValue(),
+                                    style: GoogleFonts.lato(
+                                      textStyle:
+                                          Theme.of(context).textTheme.headline4,
+                                      fontSize: 12.r,
+                                      fontWeight: FontWeight.w700,
+                                      fontStyle: FontStyle.italic,
+                                      color: _colorChange(),
+                                    ),
+                                  ),
+                                ],
                               ),
+                              _widthSpacing(32.w),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Number Of Markets',
+                                    style: GoogleFonts.lato(
+                                      textStyle:
+                                      Theme.of(context).textTheme.headline4,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                                  _heightSpacing(8.h),
+                                  Text(
+                                    '${_bloc.coin.numberOfMarkets}',
+                                    style: GoogleFonts.lato(
+                                      textStyle:
+                                      Theme.of(context).textTheme.headline4,
+                                      fontSize: 12.r,
+                                      fontWeight: FontWeight.w700,
+                                      fontStyle: FontStyle.italic,
+                                      color: _colorChange(),
+                                    ),
+                                  ),
+                                ],
+                              ),
+
                             ],
                           ),
                         ],
@@ -215,21 +260,14 @@ class _CoinDetailScreenState extends State<CoinDetailScreen> {
                     ),
                   ),
                   _heightSpacing(32),
-                  // CoinPriceHistoryLineChart(
-                  //   spots: dataChart,
-                  // ),
-                  // CoinPriceHistoryLineChart(spots: _dataChart),
-
-                  Sparkline(
-                    data: _dataChart.map((e) => e.y).toList(),
-                    useCubicSmoothing: true,
-                    cubicSmoothingFactor: 0.2,
-                  ),
                   _heightSpacing(32),
-                  LineChartSample2(
-                    spots: _dataChart,
+                  SizedBox(
+                    height: 0.75 * (MediaQuery.of(context).size.height).h,
+                    child: CandlesticksChart(
+                      ohlcList: _bloc.ohlcList,
+                    ),
                   ),
-                  BarChartCoinPriceHistory(),
+                  // CandlesticksChart(ohlcList: _bloc.ohlcList,),
                   _heightSpacing(64),
                   Text(
                     'What is ${_bloc.coin.name ?? ''}',
@@ -260,7 +298,7 @@ class _CoinDetailScreenState extends State<CoinDetailScreen> {
       }
 
       if (state is LoadCoinDetailSuccessState) {
-        // bodyView = _displayCoinDetail(_dataChart);
+        bodyView = loadingData(context, 'Data loading...');
       }
 
       if (state is LoadCoinPriceHistorySuccessState) {
@@ -289,8 +327,7 @@ class _CoinDetailScreenState extends State<CoinDetailScreen> {
       }
 
       if (state is LoadCoinPriceHistorySuccessState) {
-        List<CoinPriceHistory> coinPriceHistories =
-            _bloc.coinPriceHistories.reversed.toList();
+        List<CoinPriceHistory> coinPriceHistories = _bloc.coinPriceHistories;
 
         for (final item in coinPriceHistories) {
           double timestamp = (item.timestamp ?? 0).toDouble();
