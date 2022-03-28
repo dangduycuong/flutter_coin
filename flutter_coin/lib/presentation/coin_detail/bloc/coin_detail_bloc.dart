@@ -107,7 +107,8 @@ class CoinDetailBloc extends Bloc<CoinDetailEvent, CoinDetailState> {
         emit(const LoadCoinPriceHistoryErrorState("Failure"));
       } else {
         if (result.data?.ohlc != null) {
-          ohlcList = (result.data?.ohlc ?? []).reversed.toList();
+          // ohlcList = (result.data?.ohlc ?? []).reversed.toList();
+          ohlcList = result.data?.ohlc ?? [];
 
           emit(LoadCoinPriceHistorySuccessState());
         }

@@ -1,11 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:lottie/lottie.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:styled_widget/styled_widget.dart';
 
 import '../../../utils/route/app_routing.dart';
 import '../../common/display_item_coin.dart';
@@ -47,6 +42,7 @@ class _ListFavoriteCoinsViewState extends State<ListFavoriteCoinsView> {
         }
         return InkWell(
           onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
             Navigator.pushNamed(context, RouteDefine.coinDetailScreen.name,
                 arguments: coin);
           },

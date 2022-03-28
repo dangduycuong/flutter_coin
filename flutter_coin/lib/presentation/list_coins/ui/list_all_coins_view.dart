@@ -44,6 +44,7 @@ class _ListAllCoinsViewState extends State<ListAllCoinsView> {
         }
         return InkWell(
           onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
             Navigator.pushNamed(context, RouteDefine.coinDetailScreen.name,
                 arguments: coin);
           },

@@ -148,7 +148,7 @@ class _CoinDetailInfoScreenState extends State<CoinDetailInfoScreen> {
       title,
       style: GoogleFonts.lato(
         textStyle: Theme.of(context).textTheme.headline4,
-        fontSize: 32,
+        fontSize: 24,
         fontWeight: FontWeight.w700,
         fontStyle: FontStyle.italic,
       ),

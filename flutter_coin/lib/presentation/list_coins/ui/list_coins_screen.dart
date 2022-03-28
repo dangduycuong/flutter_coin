@@ -58,6 +58,7 @@ class _ListCoinsScreenState extends State<ListCoinsScreen> {
         actions: [
           CoinsOverviewFilterButton(
             onSelect: (filter) {
+              FocusManager.instance.primaryFocus?.unfocus();
               if (_selectedIndex == 0) {
                 _bloc.add(CoinSortEvent(filter));
               } else {
