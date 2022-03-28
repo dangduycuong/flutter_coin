@@ -50,6 +50,7 @@ class CoinDetailBloc extends Bloc<CoinDetailEvent, CoinDetailState> {
       } else {
         if (result.data?.coin != null) {
           coin = result.data!.coin!;
+          ohlcList.clear();
           emit(LoadCoinDetailSuccessState());
         }
       }
@@ -98,7 +99,7 @@ class CoinDetailBloc extends Bloc<CoinDetailEvent, CoinDetailState> {
       String uuid = coin.uuid ?? '';
       CoinOHLCDataRequestParams params = CoinOHLCDataRequestParams(
         referenceCurrencyUuid: "yhjMzLPhuIDl",
-        timePeriod: "24h",
+        timePeriod: "day", //one of minute, hour, 8hours, day, week, month
       );
       CoinOHLCDataResponse result =
           await coinDetailUseCase.getCoinOHLCData(header, uuid, params);

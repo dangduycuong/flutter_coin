@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_coin/presentation/coin_detail/ui/coin_detail_screen.dart';
+import 'package:flutter_coin/presentation/coin_detail/ui/coin_detail_info_screen.dart';
 
 import '../../data/coins/models/response/list_coins/coins.dart';
 import '../../domain/coins/repositories/coins_repository.dart';
@@ -15,7 +15,7 @@ class CoinDetailRoute {
             getIt<CoinsRepository>(),
           ),
         ),
-        child: CoinDetailScreen(
+        child: CoinDetailInfoScreen(
           coin: coin,
         ),
       );

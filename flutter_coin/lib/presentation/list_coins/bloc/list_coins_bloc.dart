@@ -49,6 +49,7 @@ class ListCoinsBloc extends Bloc<ListCoinsEvent, ListCoinsState> {
     on<SortFavoriteCoinsEvent>(_sortFavoriteCoins);
     on<SearchCoinsSuggestionsEvent>(_searchCoinsSuggestions,
         transformer: debounce(_duration));
+    on<SearchCoinsInLocalEvent>(_searchCoinsLocal);
   }
 
   void _hiveInit(InitHiveEvent event, Emitter<ListCoinsState> emit) {
@@ -83,7 +84,6 @@ class ListCoinsBloc extends Bloc<ListCoinsEvent, ListCoinsState> {
         }
       }
     } on ApiException catch (e) {
-      print('cdd $e');
       emit(CoinLoadErrorState(e.displayError));
     }
   }
@@ -114,6 +114,23 @@ class ListCoinsBloc extends Bloc<ListCoinsEvent, ListCoinsState> {
     } on ApiException catch (e) {
       emit(CoinLoadErrorState(e.displayError));
     }
+  }
+
+  void _searchCoinsLocal(
+      SearchCoinsInLocalEvent event, Emitter<ListCoinsState> emit) {
+    emit(LoadingListFavoriteState());
+    if (event.query.isEmpty) {
+      sortFavoriteCoins = listFavoriteCoins;
+    } else {
+      sortFavoriteCoins = listFavoriteCoins.where((element) {
+        String name = (element.name ?? '').toLowerCase();
+        String symbol = (element.symbol ?? '').toLowerCase();
+        String key = event.query.toLowerCase();
+        return name.contains(key) || symbol.contains(key);
+      }).toList();
+    }
+
+    emit(LoadListFavoriteSuccessState());
   }
 
   void _refreshCoins(CoinRefreshEvent event, Emitter<ListCoinsState> emit) {

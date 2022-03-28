@@ -134,13 +134,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
-  candlesticks:
-    dependency: "direct main"
-    description:
-      name: candlesticks
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.1.0"
   change_app_package_name:
     dependency: "direct main"
     description:
@@ -379,13 +372,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
-  fl_chart:
-    dependency: "direct main"
-    description:
-      name: fl_chart
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.46.0"
   flutter:
     dependency: "direct main"
     description: flutter

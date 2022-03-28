@@ -14,6 +14,7 @@ class CoinDetailItem {
   final String? color;
   final String? iconUrl;
   final String? websiteUrl;
+  final SupplyModel? supply;
   final int? numberOfMarkets;
 
   final int? numberOfExchanges;
@@ -33,6 +34,7 @@ class CoinDetailItem {
   final int? tier;
   final bool? lowVolume;
 
+  final AllTimeHigh? allTimeHigh;
   final int? listedAt;
 
   const CoinDetailItem({
@@ -43,6 +45,7 @@ class CoinDetailItem {
     this.color,
     this.iconUrl,
     this.websiteUrl,
+    this.supply,
     this.numberOfMarkets,
     this.numberOfExchanges,
     this.volume,
@@ -56,6 +59,7 @@ class CoinDetailItem {
     this.coinRankingUrl,
     this.tier,
     this.lowVolume,
+    this.allTimeHigh,
     this.listedAt,
   });
 
@@ -63,4 +67,38 @@ class CoinDetailItem {
       _$CoinDetailItemFromJson(json);
 
   Map<String, dynamic> toJson() => _$CoinDetailItemToJson(this);
+}
+
+@JsonSerializable()
+class AllTimeHigh {
+  final String? price;
+  final int? timestamp;
+
+  const AllTimeHigh({
+    this.price,
+    this.timestamp,
+  });
+
+  factory AllTimeHigh.fromJson(Map<String, dynamic> json) =>
+      _$AllTimeHighFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AllTimeHighToJson(this);
+}
+
+@JsonSerializable()
+class SupplyModel {
+  final bool? confirmed;
+  final String? total;
+  final String? circulating;
+
+  const SupplyModel({
+    this.confirmed,
+    this.total,
+    this.circulating,
+  });
+
+  factory SupplyModel.fromJson(Map<String, dynamic> json) =>
+      _$SupplyModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SupplyModelToJson(this);
 }

@@ -96,3 +96,12 @@ class SortFavoriteCoinsEvent extends ListCoinsEvent {
   @override
   List<Object> get props => [filter];
 }
+
+class SearchCoinsInLocalEvent extends ListCoinsEvent {
+  final String query;
+
+  const SearchCoinsInLocalEvent(this.query);
+
+  @override
+  List<Object> get props => [query];
+}

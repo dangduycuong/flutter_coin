@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../data/coins/models/response/list_coins/coins.dart';
-import '../list_coins/ui/list_coins_screen.dart';
+import '../../utils/extensions/color_extensions.dart';
 import 'display_icon.dart';
 
 typedef FavoriteChangValue = Function(bool value);
@@ -68,6 +68,8 @@ String changeValue(Coins coin) {
     if (change.contains('-')) {
       return '$change%';
     }
+  } else {
+    return '';
   }
   return '+$change%';
 }
@@ -94,6 +96,18 @@ Text coinNameText({required Coins coin, required Color textColor}) {
   return Text(
     coinName,
     style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
+  );
+}
+
+Widget drawSparkline(List<double> sparkline, Coins coin) {
+  Color lineColor = Colors.lightBlue;
+  if (sparkline.isEmpty) {
+    lineColor = HexColor.fromHex(coin.color ?? '#2DCFCC');
+  }
+
+  return Sparkline(
+    lineColor: lineColor,
+    data: sparkline,
   );
 }
 
@@ -164,9 +178,7 @@ Card displayItemCoin({
             child: Column(
           children: [
             heightSpacing(4),
-            Sparkline(
-              data: sparkline,
-            ),
+            drawSparkline(sparkline, coin),
             heightSpacing(4),
           ],
         )),
