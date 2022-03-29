@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -33,25 +32,20 @@ class _ListAllCoinsViewState extends State<ListAllCoinsView> {
     return ListView.builder(
       padding: const EdgeInsets.all(8.0),
       shrinkWrap: false,
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       itemBuilder: (context, index) {
         final coin = _bloc.coins[index];
-        final List<double> sparkline = <double>[];
-        if (coin.sparkline != null) {
-          for (final element in coin.sparkline!) {
-            double item = double.parse(element);
-            sparkline.add(item);
-          }
-        }
+
         return InkWell(
           onTap: () {
             FocusManager.instance.primaryFocus?.unfocus();
             Navigator.pushNamed(context, RouteDefine.coinDetailScreen.name,
                 arguments: coin);
           },
-          child: displayItemCoin(
+          child: displayOneItemCoin(
             coin: coin,
             context: context,
-            sparkline: sparkline,
+            sparkline: coin.doubleSparkline ?? [],
             isFavorite: _bloc.findFavoriteItem(coin),
             onchange: (value) {
               if (value) {

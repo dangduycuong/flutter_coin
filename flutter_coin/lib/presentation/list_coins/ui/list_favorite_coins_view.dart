@@ -31,6 +31,7 @@ class _ListFavoriteCoinsViewState extends State<ListFavoriteCoinsView> {
     return ListView.builder(
       padding: const EdgeInsets.all(8.0),
       shrinkWrap: false,
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       itemBuilder: (context, index) {
         final coin = _bloc.sortFavoriteCoins[index];
         final List<double> sparkline = <double>[];
@@ -46,7 +47,7 @@ class _ListFavoriteCoinsViewState extends State<ListFavoriteCoinsView> {
             Navigator.pushNamed(context, RouteDefine.coinDetailScreen.name,
                 arguments: coin);
           },
-          child: displayItemCoin(
+          child: displayOneItemCoin(
             coin: coin,
             context: context,
             sparkline: sparkline,

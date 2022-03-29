@@ -111,7 +111,7 @@ Widget drawSparkline(List<double> sparkline, Coins coin) {
   );
 }
 
-Card displayItemCoin({
+Card displayOneItemCoin({
   required Coins coin,
   required BuildContext context,
   required List<double> sparkline,

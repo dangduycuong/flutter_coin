@@ -52,58 +52,61 @@ class _ListCoinsScreenState extends State<ListCoinsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(titleAppBar),
-        actions: [
-          CoinsOverviewFilterButton(
-            onSelect: (filter) {
-              FocusManager.instance.primaryFocus?.unfocus();
-              if (_selectedIndex == 0) {
-                _bloc.add(CoinSortEvent(filter));
-              } else {
-                _bloc.add(SortFavoriteCoinsEvent(filter));
-              }
-            },
-            defaultText: _selectedIndex == 0 ? 'Market cap' : 'Date Created',
-          ),
-        ],
-      ),
-      body: Center(
-        // child: _widgetOptions.elementAt(_selectedIndex),
-        child: Column(
-          children: [
-            SearchBarItem(
-              textChangValue: (text) {
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(titleAppBar),
+          actions: [
+            CoinsOverviewFilterButton(
+              onSelect: (filter) {
+                FocusManager.instance.primaryFocus?.unfocus();
                 if (_selectedIndex == 0) {
-                  _bloc.add(SearchCoinsSuggestionsEvent(text));
+                  _bloc.add(CoinSortEvent(filter));
                 } else {
-                  _bloc.add(SearchCoinsInLocalEvent(text));
+                  _bloc.add(SortFavoriteCoinsEvent(filter));
                 }
               },
-            ),
-            Expanded(
-              child: _widgetOptions.elementAt(_selectedIndex),
+              defaultText: _selectedIndex == 0 ? 'Market cap' : 'Date Created',
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.select_all),
-            label: 'Home',
-            backgroundColor: Colors.red,
+        body: Center(
+          // child: _widgetOptions.elementAt(_selectedIndex),
+          child: Column(
+            children: [
+              SearchBarItem(
+                textChangValue: (text) {
+                  if (_selectedIndex == 0) {
+                    _bloc.add(SearchCoinsSuggestionsEvent(text));
+                  } else {
+                    _bloc.add(SearchCoinsInLocalEvent(text));
+                  }
+                },
+              ),
+              Expanded(
+                child: _widgetOptions.elementAt(_selectedIndex),
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.star),
-            label: 'Favorites',
-            backgroundColor: Colors.green,
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        onTap: _onItemTapped,
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.select_all),
+              label: 'Home',
+              backgroundColor: Colors.red,
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.star),
+              label: 'Favorites',
+              backgroundColor: Colors.green,
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.amber[800],
+          onTap: _onItemTapped,
+        ),
       ),
     );
   }

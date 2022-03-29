@@ -26,7 +26,7 @@ EventTransformer<Event> debounce<Event>(Duration duration) {
 
 class ListCoinsBloc extends Bloc<ListCoinsEvent, ListCoinsState> {
   final CoinsUseCase coinsUseCase;
-  final int _limit = 50;
+  final int _limit = 20;
   int _start = 0;
   List<Coins> coins = <Coins>[];
   bool stopLoadMore = false;
@@ -77,6 +77,10 @@ class ListCoinsBloc extends Bloc<ListCoinsEvent, ListCoinsState> {
         emit(const CoinLoadErrorState("Failure"));
       } else {
         if (result.data?.coins != null) {
+          result.data?.coins?.forEach((element) {
+            element.doubleSparkline =
+                element.sparkline?.map((e) => double.parse(e)).toList();
+          });
           coins += (result.data!.coins!);
           emit(CoinLoadSuccessState());
         } else {
