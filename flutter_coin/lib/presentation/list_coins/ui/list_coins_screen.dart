@@ -78,7 +78,7 @@ class _ListCoinsScreenState extends State<ListCoinsScreen> {
               SearchBarItem(
                 textChangValue: (text) {
                   if (_selectedIndex == 0) {
-                    _bloc.add(SearchCoinsSuggestionsEvent(text));
+                    _bloc.add(SearchCoinsSuggestionsEvent(query: text));
                   } else {
                     _bloc.add(SearchCoinsInLocalEvent(text));
                   }
@@ -167,6 +167,30 @@ class CoinsOverviewFilterButton extends StatelessWidget {
               ),
             ),
           ),
+          PopupMenuItem(
+            value: CoinsViewFilter.greatChange,
+            child: Text(
+              'Top Gainers',
+              style: GoogleFonts.lato(
+                textStyle: Theme.of(context).textTheme.headline4,
+                fontSize: 16.r,
+                fontWeight: FontWeight.w700,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ),
+          PopupMenuItem(
+            value: CoinsViewFilter.badChange,
+            child: Text(
+              'Top Losers',
+              style: GoogleFonts.lato(
+                textStyle: Theme.of(context).textTheme.headline4,
+                fontSize: 16.r,
+                fontWeight: FontWeight.w700,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ),
         ];
       },
       icon: const Icon(Icons.filter_list_rounded),
@@ -178,4 +202,6 @@ enum CoinsViewFilter {
   increment,
   decrement,
   marketCap,
+  greatChange,
+  badChange,
 }

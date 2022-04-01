@@ -15,7 +15,7 @@ class Coins {
   final int? tier;
   final String? change;
   final int? rank;
-  final List<String>? sparkline;
+  final List<String?>? sparkline;
   List<double>? doubleSparkline;
   final bool? lowVolume;
   @JsonKey(name: 'coinrankingUrl')

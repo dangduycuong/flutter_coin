@@ -37,7 +37,7 @@ class _ListFavoriteCoinsViewState extends State<ListFavoriteCoinsView> {
         final List<double> sparkline = <double>[];
         if (coin.sparkline != null) {
           for (final element in coin.sparkline!) {
-            double item = double.parse(element);
+            double item = double.parse(element ?? '0');
             sparkline.add(item);
           }
         }

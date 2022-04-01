@@ -27,22 +27,3 @@ class LoadCoinDetailSuccessState extends CoinDetailState {
   @override
   List<Object> get props => [];
 }
-
-class LoadingCoinPriceHistoryState extends CoinDetailState {
-  @override
-  List<Object> get props => [];
-}
-
-class LoadCoinPriceHistoryErrorState extends CoinDetailState {
-  final String error;
-
-  const LoadCoinPriceHistoryErrorState(this.error);
-
-  @override
-  List<Object> get props => [error];
-}
-
-class LoadCoinPriceHistorySuccessState extends CoinDetailState {
-  @override
-  List<Object> get props => [];
-}

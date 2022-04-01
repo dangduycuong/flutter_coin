@@ -28,7 +28,7 @@ class CoinDetailItem {
   final String? change;
   final int? rank;
 
-  final List<String>? sparkline;
+  final List<String?>? sparkline;
   @JsonKey(name: 'coinrankingUrl')
   final String? coinRankingUrl;
   final int? tier;

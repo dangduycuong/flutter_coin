@@ -31,19 +31,10 @@ class InitHiveEvent extends ListCoinsEvent {
 class CoinLoadingEvent extends ListCoinsEvent {
   final bool isRefresh;
 
-  const CoinLoadingEvent(this.isRefresh);
+  const CoinLoadingEvent({required this.isRefresh});
 
   @override
   List<Object> get props => [isRefresh];
-}
-
-class SearchCoinsSuggestionsEvent extends ListCoinsEvent {
-  final String query;
-
-  const SearchCoinsSuggestionsEvent(this.query);
-
-  @override
-  List<Object> get props => [query];
 }
 
 class CoinRefreshEvent extends ListCoinsEvent {
@@ -95,6 +86,15 @@ class SortFavoriteCoinsEvent extends ListCoinsEvent {
 
   @override
   List<Object> get props => [filter];
+}
+
+class SearchCoinsSuggestionsEvent extends ListCoinsEvent {
+  final String query;
+
+  const SearchCoinsSuggestionsEvent({required this.query});
+
+  @override
+  List<Object> get props => [query];
 }
 
 class SearchCoinsInLocalEvent extends ListCoinsEvent {

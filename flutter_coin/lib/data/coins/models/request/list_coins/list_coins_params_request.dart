@@ -9,6 +9,7 @@ class ListCoinsParamsRequest {
   final String tiers;
   final String orderBy;
 
+  final String? search;
   final String orderDirection;
   final int limit;
   final int offset;
@@ -18,7 +19,7 @@ class ListCoinsParamsRequest {
     required this.timePeriod,
     required this.tiers,
     required this.orderBy,
-
+    required this.search,
     required this.orderDirection,
     required this.limit,
     required this.offset,

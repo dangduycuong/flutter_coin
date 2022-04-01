@@ -20,7 +20,7 @@ class LocalCoinModel {
   String? price;
 
   @HiveField(5)
-  List<String>? sparkline;
+  List<String?>? sparkline;
 
   @HiveField(6)
   String? color;

@@ -6,7 +6,6 @@ import 'package:hive/hive.dart';
 import '../../../data/coins/models/local/local_coin.dart';
 import '../../../data/coins/models/request/coins_header_request.dart';
 import '../../../data/coins/models/request/list_coins/list_coins_params_request.dart';
-import '../../../data/coins/models/request/list_coins/search_suggestions_request_params.dart';
 import '../../../data/coins/models/response/list_coins/coins.dart';
 import '../../../data/utils/exceptions/api_exception.dart';
 import '../../../domain/coins/use_cases/list_coins_usecase.dart';
@@ -36,6 +35,7 @@ class ListCoinsBloc extends Bloc<ListCoinsEvent, ListCoinsState> {
   List<Coins> sortFavoriteCoins = [];
   LocalCoinModel favoriteCoinItem = LocalCoinModel();
   late final Box box;
+  String? searchText;
 
   ListCoinsBloc(this.coinsUseCase) : super(ListCoinsInitial()) {
     on<InitHiveEvent>(_hiveInit);
@@ -68,6 +68,7 @@ class ListCoinsBloc extends Bloc<ListCoinsEvent, ListCoinsState> {
         timePeriod: "24h",
         tiers: "1",
         orderBy: _orderBy,
+        search: searchText,
         orderDirection: _orderDirection,
         limit: _limit,
         offset: _start,
@@ -79,9 +80,12 @@ class ListCoinsBloc extends Bloc<ListCoinsEvent, ListCoinsState> {
         if (result.data?.coins != null) {
           result.data?.coins?.forEach((element) {
             element.doubleSparkline =
-                element.sparkline?.map((e) => double.parse(e)).toList();
+                element.sparkline?.map((e) => double.parse(e ?? '0')).toList();
           });
           coins += (result.data!.coins!);
+          if (result.data?.coins?.isEmpty == true) {
+            stopLoadMore = true;
+          }
           emit(CoinLoadSuccessState());
         } else {
           stopLoadMore = true;
@@ -94,30 +98,11 @@ class ListCoinsBloc extends Bloc<ListCoinsEvent, ListCoinsState> {
 
   void _searchCoinsSuggestions(
       SearchCoinsSuggestionsEvent event, Emitter<ListCoinsState> emit) async {
-    try {
-      emit(const CoinLoadingState(isRefresh: true));
-      CoinsHeaderRequest header = CoinsHeaderRequest(
-        host: "coinranking1.p.rapidapi.com",
-        key: "fb71aa7f62msh153e4924e940392p16bbc4jsn166248f8bdaa",
-      );
-      SearchSuggestionsRequestParams params = SearchSuggestionsRequestParams(
-        referenceCurrencyUuid: "yhjMzLPhuIDl",
-        query: event.query,
-      );
-      ListCoinsResponse result =
-          await coinsUseCase.searchCoinsSuggestions(header, params);
-      if (result.status != "success") {
-        emit(const CoinLoadErrorState("Failure"));
-      } else {
-        if (result.data?.coins != null) {
-          coins = (result.data!.coins!);
-          stopLoadMore = true;
-          emit(CoinLoadSuccessState());
-        }
-      }
-    } on ApiException catch (e) {
-      emit(CoinLoadErrorState(e.displayError));
-    }
+    searchText = event.query;
+    _start = 0;
+    coins.clear();
+    stopLoadMore = false;
+    add(CoinRefreshEvent());
   }
 
   void _searchCoinsLocal(
@@ -139,15 +124,15 @@ class ListCoinsBloc extends Bloc<ListCoinsEvent, ListCoinsState> {
 
   void _refreshCoins(CoinRefreshEvent event, Emitter<ListCoinsState> emit) {
     _start = 0;
-    coins = [];
+    coins.clear();
     stopLoadMore = false;
-    add(const CoinLoadingEvent(true));
+    add(const CoinLoadingEvent(isRefresh: true));
   }
 
   void _loadMoreCoins(CoinLoadMoreEvent event, Emitter<ListCoinsState> emit) {
     if (stopLoadMore == false) {
       _start += _limit;
-      add(const CoinLoadingEvent(false));
+      add(const CoinLoadingEvent(isRefresh: false));
     }
   }
 
@@ -167,7 +152,16 @@ class ListCoinsBloc extends Bloc<ListCoinsEvent, ListCoinsState> {
         break;
       case CoinsViewFilter.decrement:
         sortFavoriteCoins.sort((a, b) => double.parse(b.price ?? '0')
-            .compareTo(double.parse(a.price ?? '')));
+            .compareTo(double.parse(a.price ?? '0')));
+        break;
+      case CoinsViewFilter.greatChange:
+        sortFavoriteCoins.sort((a, b) => double.parse(b.change ?? '0')
+            .compareTo(double.parse(a.change ?? '0')));
+
+        break;
+      case CoinsViewFilter.badChange:
+        sortFavoriteCoins.sort((a, b) => double.parse(a.change ?? '0')
+            .compareTo(double.parse(b.change ?? '0')));
         break;
     }
     await Future.delayed(const Duration(seconds: 1), () {});
@@ -188,18 +182,26 @@ class ListCoinsBloc extends Bloc<ListCoinsEvent, ListCoinsState> {
         _orderBy = "price";
         _orderDirection = "desc";
         break;
+      case CoinsViewFilter.greatChange:
+        _orderBy = 'change';
+        _orderDirection = "desc";
+        break;
+      case CoinsViewFilter.badChange:
+        _orderBy = 'change';
+        _orderDirection = "asc";
+        break;
     }
     _start = 0;
     coins = [];
     stopLoadMore = false;
-    add(const CoinLoadingEvent(true));
+    add(const CoinLoadingEvent(isRefresh: true));
   }
 
   void _loadFavoriteCoins(
       LoadFavoriteCoinsEvent event, Emitter<ListCoinsState> emit) {
     emit(LoadingListFavoriteState());
-    listFavoriteCoins = [];
-    sortFavoriteCoins = [];
+    listFavoriteCoins.clear();
+    sortFavoriteCoins.clear();
     if (box.length > 0) {
       for (int index = 0; index < box.length; index++) {
         final LocalCoinModel local = box.getAt(index) as LocalCoinModel;

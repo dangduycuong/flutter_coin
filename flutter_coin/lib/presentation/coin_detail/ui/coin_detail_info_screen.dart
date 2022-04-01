@@ -237,7 +237,7 @@ class _CoinDetailInfoScreenState extends State<CoinDetailInfoScreen> {
                   _heightSpacing(8.h),
                   _setTitleText('MarketCap'),
                   _heightSpacing(8.h),
-                  _textMarketCap(int.parse(_bloc.coin.marketCap ?? '')),
+                  _textMarketCap(int.parse(_bloc.coin.marketCap ?? '0')),
                   _heightSpacing(8.h),
                   _setTitleText('24h Volume'),
                   _heightSpacing(8.h),
@@ -315,7 +315,7 @@ class _CoinDetailInfoScreenState extends State<CoinDetailInfoScreen> {
               child: SizedBox(
                 height: 0.75 * (MediaQuery.of(context).size.height).h,
                 child: CandlesticksChart(
-                  ohlcList: _bloc.ohlcList,
+                  candles: _bloc.candles,
                 ),
               ),
             ),
@@ -338,44 +338,37 @@ class _CoinDetailInfoScreenState extends State<CoinDetailInfoScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<CoinDetailBloc, CoinDetailState>(
         builder: (context, state) {
-      Widget? bodyView;
-      if (state is LoadingCoinDetailState) {
-        bodyView = loadingData(context, 'Data loading...');
-      }
+          Widget? bodyView;
+          if (state is LoadingCoinDetailState) {
+            bodyView = loadingData(context, 'Data loading...');
+          }
 
-      if (state is LoadCoinPriceHistorySuccessState) {
-        bodyView = _oneItem();
-      }
+          if (state is LoadCoinDetailSuccessState) {
+            bodyView = _oneItem();
+          }
 
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('${widget.coin?.name}'),
-          actions: [
-            IconButton(
-              onPressed: _pushToWebView,
-              icon: const Icon(Icons.description),
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('${widget.coin?.name}'),
+              actions: [
+                IconButton(
+                  onPressed: _pushToWebView,
+                  icon: const Icon(Icons.description),
+                ),
+              ],
             ),
-          ],
-        ),
-        body: SmartRefresher(
-          controller: _controller,
-          child: bodyView,
-          enablePullUp: false,
-          onRefresh: () async {
-            await Future.delayed(const Duration(milliseconds: 1000));
-            _controller.refreshCompleted();
-            _bloc.add(LoadDetailCoinEvent('${widget.coin?.uuid}'));
-          },
-        ),
-      );
-    }, listener: (context, state) {
-      if (state is LoadCoinDetailSuccessState) {
-        _bloc.add(GetCoinPriceHistoryEvent());
-      }
-
-      if (state is LoadingCoinPriceHistoryState) {}
-
-      if (state is LoadCoinPriceHistorySuccessState) {}
-    });
+            body: SmartRefresher(
+              controller: _controller,
+              child: bodyView,
+              enablePullUp: false,
+              onRefresh: () async {
+                await Future.delayed(const Duration(milliseconds: 1000));
+                _controller.refreshCompleted();
+                _bloc.add(LoadDetailCoinEvent('${widget.coin?.uuid}'));
+              },
+            ),
+          );
+        },
+        listener: (context, state) {});
   }
 }

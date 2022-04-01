@@ -27,13 +27,6 @@ abstract class CoinsApi {
     @Queries() Map<String, dynamic> queries,
   );
 
-  @GET('/search-suggestions')
-  Future<ListCoinsResponse> searchCoinsSuggestions(
-    @Header('x-rapidapi-host') String host,
-    @Header('x-rapidapi-key') String key,
-    @Queries() Map<String, dynamic> queries,
-  );
-
   @GET('/coin/{uuid}/history')
   Future<CoinPriceHistoryResponse> getCoinPriceHistory(
     @Header('x-rapidapi-host') String host,

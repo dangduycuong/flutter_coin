@@ -23,7 +23,7 @@ class _ListAllCoinsViewState extends State<ListAllCoinsView> {
   void initState() {
     _bloc = context.read<ListCoinsBloc>();
     _bloc.add(InitHiveEvent());
-    _bloc.add(const CoinLoadingEvent(true));
+    _bloc.add(const CoinLoadingEvent(isRefresh: true));
 
     super.initState();
   }
